@@ -16,7 +16,7 @@ library(gridExtra) # for arranging plots
 #### Carregar os dados e formatação
 tamanho <- c(-2.095548,2.583353)
 
-CDS <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/drive-download-20171018T001327Z-001/CDS.xlsx", 
+CDS <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/CDS.xlsx", 
                   col_types = c("date", "numeric", "blank", 
                                 "date", "numeric"))
 CDS <- CDS[-1,]
@@ -32,7 +32,7 @@ colnames(CDS10)[2] <- nomes[2]
 names(CDS5)[1] <- "Data"
 names(CDS10)[1] <- "Data"
 
-DOLDI <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/drive-download-20171018T001327Z-001/DOLDI.xlsx", 
+DOLDI <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/DOLDI.xlsx", 
                     col_types = c("date", "numeric"))
 nomes <- colnames(DOLDI)
 nomes <- nomes[1]
@@ -40,7 +40,7 @@ DOLDI <- DOLDI[-1,]
 colnames(DOLDI)[2] <- nomes
 names(DOLDI)[1] <- "Data"
 
-EMBI <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/drive-download-20171018T001327Z-001/EMBI.xlsx", 
+EMBI <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/EMBI.xlsx", 
                    col_types = c("date", "numeric"))
 nomes <- colnames(EMBI)
 nomes <- nomes[1]
@@ -61,7 +61,7 @@ for(i in 1:2){
 }
 cambiocontrat <- cbind(cambiocontrat[[1]],cambiocontrat[[2]])
 
-DOLARSPOT <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/drive-download-20171018T001327Z-001/DOLARSPOT.xlsx", 
+DOLARSPOT <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/DOLARSPOT.xlsx", 
                         col_types = c("date", "numeric"))
 nomes <- colnames(DOLARSPOT)
 nomes <- nomes[1]
@@ -70,7 +70,7 @@ colnames(DOLARSPOT)[2] <- nomes
 names(DOLARSPOT)[1] <- "Data"
 
 
-result <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/drive-download-20171018T001327Z-001/RESULT.xlsx", 
+result <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/RESULT.xlsx", 
                      col_types = c("date", "numeric", "numeric", 
                                    "text", "numeric", "numeric"))
 
