@@ -16,21 +16,14 @@ library(gridExtra) # for arranging plots
 #### Carregar os dados e formatação
 tamanho <- c(-2.095548,2.583353)
 
-CDS <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/CDS.xlsx", 
-                  col_types = c("date", "numeric", "blank", 
-                                "date", "numeric"))
-CDS <- CDS[-1,]
-nomes <- colnames(CDS)
-nomes <- nomes[c(1,3)]
-cdsdatas5 <- as.timeDate(CDS$`BRAZIL CDS USD SR 5Y D14 Corp`)
-cdsdatas10 <- as.timeDate(CDS$`BRAZIL CDS USD SR 10Y D14 Corp`)
-CDS <- CDS[,c(-1,-3)]
-CDS5 <- cbind(cdsdatas5,CDS[,1])
-CDS10 <- cbind(cdsdatas10,CDS[,2])
-colnames(CDS5)[2] <- nomes[1]
-colnames(CDS10)[2] <- nomes[2]
+CDS5 <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/CDS5.xlsx", 
+                   col_types = c("date", "numeric"), na = "NA")
+
+CDS5 <- CDS5[-1,]
+nomes <- colnames(CDS5)
+nomes <- nomes[1]
+colnames(CDS5)[2] <- nomes
 names(CDS5)[1] <- "Data"
-names(CDS10)[1] <- "Data"
 
 DOLDI <- read_excel("~/Documentos/dissertacao/dissertacao-mestrado/dados/DOLDI.xlsx", 
                     col_types = c("date", "numeric"))
@@ -146,24 +139,21 @@ dolembi <- merge.data.frame(DOLARSPOT, EMBI, by="Data")
 dolembi <- xts(dolembi[,-1], order.by = dolembi$Data)
 dolembi <- log(dolembi)
 ddolembi <- diff(dolembi)
+ddolembi <- ddolembi["2002-01-01/2016-12-31"]
 
 ### EMBI+br
 dolembibr <- merge.data.frame(DOLARSPOT,EMBI_BR, by="Data")
 dolembibr <- xts(dolembibr[,-1], order.by = dolembibr$Data)
 dolembibr <- log(dolembibr)
 ddolembibr <- diff(dolembibr)
+ddolembibr <- ddolembibr["2002-01-01/2016-12-31"]
 
 ### CDS 5 anos
 dolcds5 <- merge.data.frame(DOLARSPOT,CDS5, by="Data")
 dolcds5 <- xts(dolcds5[,-1], order.by = dolcds5$Data)
 dolcds5 <- log(dolcds5)
 ddolcds5 <- diff(dolcds5)
-
-### CDS 10 anos
-dolcds10 <- merge.data.frame(DOLARSPOT, CDS10, by="Data")
-dolcds10 <- xts(dolcds10[,-1], order.by = dolcds10$Data)
-dolcds10 <- log(dolcds10)
-ddolcds10 <- diff(dolcds10)
+ddolcds5 <- dolcds5["2002-01-01/2016-12-31"]
 
 ################################################### EMBI
 ### Fluxo II
@@ -330,51 +320,6 @@ ggplot(r1.z, aes(as.Date(time(r1.z)),r1.z)) +
   annotate("text", x = as.Date(time(r1.z)[1]),
            y=round(head(fitted(fm0),1),2)-0.01,
            label = round(head(fitted(fm0),1),3))
-
-
-## CDS 10
-
-fitcds10 <- dccfit(spec, ddolcds10[-1,], out.sample = 0, solver = "solnp", solver.control = list(), 
-                   fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
-                   cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL)
-
-r1=rcor(fitcds10, type="R")
-r1.z=xts(r1[1,2,],time(ddolcds10[-1,]))
-bp.nile <- breakpoints(r1.z ~ 1)
-ci.nile <- confint(bp.nile, breaks = 2)
-fm0 <- lm(ts(r1.z) ~ 1)
-fm1 <- lm(ts(r1.z) ~ breakfactor(bp.nile, breaks = 2))
-
-intervalos <- data.frame(min = as.Date(time(r1.z[ci.nile$confint[,1]])),
-                         max = as.Date(time(r1.z[ci.nile$confint[,3]])))
-
-qbCDS10 <- as.Date(time(r1.z[ci.nile$confint[,2]]))
-
-ggplot(r1.z, aes(as.Date(time(r1.z)),r1.z)) + 
-  geom_line() +
-  scale_x_date(breaks=date_breaks("years"),
-               labels=date_format("%b %Y"))+
-  theme_bw()+
-  ylab("") + xlab("")+
-  theme_classic()+
-  ylab("") + xlab("")+
-  theme(panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.x = element_line(size = 0.1, linetype = "dashed"),
-        panel.grid.minor.y = element_blank(),
-        legend.position = "right")+
-  geom_hline(aes(yintercept =  fitted(fm0),  linetype = "Média"), size = 0.5, color="green")+
-  geom_line(aes(x=as.Date(time(r1.z)),y=fitted(fm1), linetype = "Quebras"), color="blue")+
-  scale_linetype_manual(name = "", values = c(1,1),
-                        guide = guide_legend(override.aes = list(color = c("green", "blue"))))+
-  geom_rect(data=intervalos,
-            aes(xmin=min, 
-                xmax=max, 
-                ymin=-Inf, ymax=+Inf), 
-            fill='gray', alpha=0.5,inherit.aes=F)+
-  annotate("text", x = as.Date(time(r1.z)[90]),
-           y=round(head(fitted(fm0),1),2)-0.01,
-           label =  round(head(fitted(fm0),1),3))
 
 
 ### Saldo II
