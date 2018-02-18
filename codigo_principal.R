@@ -153,7 +153,7 @@ dolcds5 <- merge.data.frame(DOLARSPOT,CDS5, by="Data")
 dolcds5 <- xts(dolcds5[,-1], order.by = dolcds5$Data)
 dolcds5 <- log(dolcds5)
 ddolcds5 <- diff(dolcds5)
-ddolcds5 <- dolcds5["2002-01-01/2016-12-31"]
+ddolcds5 <- ddolcds5["2002-01-01/2016-12-31"]
 
 ################################################### EMBI
 ### Fluxo II
